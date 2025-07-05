@@ -1,33 +1,40 @@
-const dotenv = require('dotenv');
 const { Sequelize } = require('sequelize');
 
-dotenv.config();
+const dotenv = require('dotenv');
+dotenv.config();	
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+const db = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
 	host: process.env.DB_HOST,
+	port: process.env.DB_PORT,
+	database: process.env.DB_NAME,
 	username: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
-	database: process.env.DB_NAME,
-	port: process.env.DB_PORT,
-	dialect: process.env.DB_DIALECT,
-	logging: false,
+	dialect: 'mysql',
 	pool: {
 		max: 5,
 		min: 0,
-		acquire: 30000,
-		idle: 10000,
-	},
+		idle: 10000
+	}
 });
 
-// Test the connection
-(async () => {
+
+const init = async () => {
 	try {
-		await sequelize.authenticate();
-		console.log('Connection has been established successfully.');
+		await db.authenticate();
+		console.log('Database connection established successfully.');
+		await db.sync(); // Sync all defined models to the DB
+		console.log('Database models synchronized successfully.');
 	} catch (error) {
-		console.error('Unable to connect to the database:', error);
+		console.error('Unable to connect or sync to the database:', error);
 	}
-})();
+};
+
+module.exports = {
+	db,
+	init
+};
+
+// This code initializes a connection to a MySQL database using Sequelize.
+// It reads database configuration from environment variables and exports the Sequelize instance and an initialization function.
 
 
-module.exports = sequelize;
