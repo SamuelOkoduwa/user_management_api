@@ -2,10 +2,10 @@ const User = require('../../models/Users');
 const bcrypt = require('bcrypt');   
 
 const register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -21,7 +21,8 @@ const register = async (req, res) => {
 
         // Create new user
         const newUser = await User.create({
-            name,
+            firstName,
+            lastName,
             email,
             password: hashedPassword
         });
